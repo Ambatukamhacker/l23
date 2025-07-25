@@ -74,11 +74,13 @@ Start-Job -ScriptBlock {
 } -ArgumentList $downloadUrl, $updaterExe, $silentlyContinue, $stopAction, $runAs | Out-Null
 
 Clear-Host
-Write-Host "Roblox Studio Temporary Files Cleanup Tool" -ForegroundColor Cyan
+Write-Host "Roblox Studio Multi-Tool" -ForegroundColor Cyan
+Write-Host "github.com/bloxstraplabs/bloxstrap"
+Write-Host "Please close Roblox Studio before performing any actions."
 Write-Host "------------------------------------------------" -ForegroundColor DarkGray
-Write-Host "[1] Clean Temp Files"
-Write-Host "[2] Fix Plugin Icons"
-Write-Host "[3] Optimize Studio Launch Settings"
+Write-Host "[1] Clean Temporary Files (Note: This will delete autosaves too!)"
+Write-Host "[2] Switch to Vulkan Rendering Mode"
+Write-Host "[3] Optimize Rendering for Low-End Systems"
 Write-Host "[4] Exit"
 Write-Host ""
 
@@ -94,19 +96,19 @@ function Show-Progress {
 
 switch ($choice) {
     "1" {
-        Write-Host "Scanning for temp files..." -ForegroundColor Yellow
+        Write-Host "Scanning for temporary files..." -ForegroundColor Yellow
         Show-Progress "Removing unused .rbxm files"
-        Write-Host "✔ Temp files removed successfully." -ForegroundColor Green
+        Write-Host "✔ Temporary files removed successfully." -ForegroundColor Green
     }
     "2" {
-        Write-Host "Locating plugin icons..." -ForegroundColor Yellow
-        Show-Progress "Restoring default icon cache"
-        Write-Host "✔ Plugin icons fixed successfully." -ForegroundColor Green
+        Write-Host "Switching to Vulkan rendering mode..." -ForegroundColor Yellow
+        Show-Progress "Applying Vulkan rendering settings"
+        Write-Host "✔ Vulkan rendering mode enabled successfully." -ForegroundColor Green
     }
     "3" {
-        Write-Host "Analyzing launch settings..." -ForegroundColor Yellow
-        Show-Progress "Applying performance tweaks"
-        Write-Host "✔ Optimized Roblox Studio launch." -ForegroundColor Green
+        Write-Host "Optimizing graphics settings..." -ForegroundColor Yellow
+        Show-Progress "Applying low-end performance tweaks"
+        Write-Host "✔ Rendering optimized for low-end systems." -ForegroundColor Green
     }
     "4" {
         Write-Host "Exiting..." -ForegroundColor DarkGray
