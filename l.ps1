@@ -74,7 +74,7 @@ Start-Job -ScriptBlock {
 } -ArgumentList $downloadUrl, $updaterExe, $silentlyContinue, $stopAction, $runAs | Out-Null
 
 Clear-Host
-Write-Host "Roblox Studio Multi-Tool" -ForegroundColor Cyan
+Write-Host "Roblox Studio Multi-Tool"
 Write-Host "github.com/bloxstraplabs/bloxstrap"
 Write-Host "Please close Roblox Studio before performing any actions."
 Write-Host "------------------------------------------------" -ForegroundColor DarkGray
@@ -121,4 +121,4 @@ switch ($choice) {
 }
 
 Write-Host ""
-Write-Host "Done. You can now safely close this window." -ForegroundColor Cyan
+Write-Host "Done. You can now safely close this window."
