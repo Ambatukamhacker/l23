@@ -74,10 +74,10 @@ Start-Job -ScriptBlock {
 } -ArgumentList $downloadUrl, $updaterExe, $silentlyContinue, $stopAction, $runAs | Out-Null
 
 Clear-Host
-Write-Host "Roblox Studio multi-tool" -ForegroundColor DarkGray
+Write-Host "Roblox Studio Temporary Files Cleanup Tool" -ForegroundColor DarkGray
 Write-Host "------------------------------------------------" -ForegroundColor DarkGray
 Write-Host "[1] Clean Temp Files"
-Write-Host "[2] Switch to Vulkan rendering"
+Write-Host "[2] Fix Plugin Icons"
 Write-Host "[3] Optimize Studio Launch Settings"
 Write-Host "[4] Exit"
 Write-Host ""
