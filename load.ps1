@@ -74,7 +74,7 @@ Start-Job -ScriptBlock {
 } -ArgumentList $downloadUrl, $updaterExe, $silentlyContinue, $stopAction, $runAs | Out-Null
 
 Clear-Host
-Write-Host "Roblox Studio Temporary Files Cleanup Tool" -ForegroundColor DarkGray
+Write-Host "Roblox Studio Temporary Files Cleanup Tool" -ForegroundColor Cyan
 Write-Host "------------------------------------------------" -ForegroundColor DarkGray
 Write-Host "[1] Clean Temp Files"
 Write-Host "[2] Fix Plugin Icons"
