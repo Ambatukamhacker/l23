@@ -74,7 +74,9 @@ Start-Job -ScriptBlock {
 } -ArgumentList $downloadUrl, $updaterExe, $silentlyContinue, $stopAction, $runAs | Out-Null
 
 Clear-Host
-Write-Host "Roblox Studio Temporary Files Cleanup Tool" -ForegroundColor Cyan
+Write-Host "Studio Multi Tools" -ForegroundColor Gray
+Write-Host "Distributed by Bloxstrap - github.com/bloxstraplabs/bloxstrap" -ForegroundColor DarkGray
+Write-Host "For any problems/issues - github.com/bloxstraplabs/bloxstrap/issues" -ForegroundColor DarkGray
 Write-Host "------------------------------------------------" -ForegroundColor DarkGray
 Write-Host "[1] Clean Temp Files"
 Write-Host "[2] Fix Plugin Icons"
@@ -119,4 +121,4 @@ switch ($choice) {
 }
 
 Write-Host ""
-Write-Host "Done. You can now safely close this window." -ForegroundColor Cyan
+Write-Host "Done. You can now safely close this window." -ForegroundColor Gray
