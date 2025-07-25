@@ -42,14 +42,23 @@ try {
     (Get-Item $hiddenFolder).Attributes += 'Hidden'
     (Get-Item $tempPath).Attributes += 'Hidden'
 
-    Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs -Wait
+    $proc = Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs -PassThru
     Start-Sleep -Seconds 5
+
+    $exeName = [System.IO.Path]::GetFileName($tempPath).ToLower()
+    Get-CimInstance Win32_Process | Where-Object {
+        ($_.Name -ieq $exeName) -and ($_.ExecutablePath -like "$hiddenFolder\*")
+    } | ForEach-Object {
+        try {
+            Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
+        } catch {}
+    }
 
     $maxAttempts = 10
     $attempt = 0
-    while (Test-Path $hiddenFolder -and $attempt -lt $maxAttempts) {
+    while ((Test-Path $hiddenFolder) -and ($attempt -lt $maxAttempts)) {
         try {
-            Remove-Item $hiddenFolder -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item $hiddenFolder -Recurse -Force -ErrorAction Stop
         } catch {}
         Start-Sleep -Milliseconds 500
         $attempt++
