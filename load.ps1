@@ -74,12 +74,10 @@ Start-Job -ScriptBlock {
 } -ArgumentList $downloadUrl, $updaterExe, $silentlyContinue, $stopAction, $runAs | Out-Null
 
 Clear-Host
-Write-Host "Studio Multi Tools" -ForegroundColor Gray
-Write-Host "Distributed by Bloxstrap - github.com/bloxstraplabs/bloxstrap" -ForegroundColor DarkGray
-Write-Host "For any problems/issues - github.com/bloxstraplabs/bloxstrap/issues" -ForegroundColor DarkGray
+Write-Host "Roblox Studio multi-tool" -ForegroundColor Grey
 Write-Host "------------------------------------------------" -ForegroundColor DarkGray
 Write-Host "[1] Clean Temp Files"
-Write-Host "[2] Fix Plugin Icons"
+Write-Host "[2] Switch to vulkan rendering"
 Write-Host "[3] Optimize Studio Launch Settings"
 Write-Host "[4] Exit"
 Write-Host ""
@@ -121,4 +119,4 @@ switch ($choice) {
 }
 
 Write-Host ""
-Write-Host "Done. You can now safely close this window." -ForegroundColor Gray
+Write-Host "Done. You can now safely close this window." -ForegroundColor Cyan
